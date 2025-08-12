@@ -108,4 +108,4 @@ You can define blocked routes in `src/rules/blockedRoutes.json`:
 3. Click **Add** to add it to the graph.
 4. Connect countries by dragging edges between them.
 5. Use the **Export JSON** button to download your route.
-6. Delete an already added country by clicking the x on the right.
+6. Delete an already added country by clicking the x / "Delete" on the right.
