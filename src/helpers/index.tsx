@@ -7,12 +7,9 @@ export function createsCycle(
   source: string | null,
   target: string | null
 ): boolean {
-  console.log(source);
-  console.log(target);
   if (!source || !target) return false;
 
   const connections: Record<string, string[]> = {};
-  console.log(edges);
   for (const e of edges) {
     if (!connections[e.source]) {
       connections[e.source] = [];

@@ -31,11 +31,13 @@ const TravelRoute: React.FC = () => {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      console.log(connection);
-      if (!connection.source || !connection.target) return;
-
+      if (!connection.source || !connection.target) {
+        return null;
+      }
       setEdges((edges) => {
-        // block already existed connection
+        /**
+         * block already existed connection
+         */
         const alreadyExistedEdge = edges.some(
           (edge) =>
             edge.source === connection.source &&
@@ -43,20 +45,26 @@ const TravelRoute: React.FC = () => {
         );
         if (alreadyExistedEdge) return edges;
 
-        // block self-loop
+        /**
+         * block self-loop
+         */
         if (connection.source === connection.target) {
           alert("A country cannot connect to itself.");
           return edges;
         }
 
-        // block specific routes based on predefined rules stored in JSON
+        /**
+         *  block specific routes based on predefined rules stored in JSON
+         */
         const reason = isRouteBlocked(connection.source, connection.target);
         if (reason) {
           alert(reason);
           return edges;
         }
 
-        // cycle prevention validation
+        /**
+         * cycle prevention validation
+         */
         if (createsCycle(edges, connection.source, connection.target)) {
           alert("This connection would create a loop. Cycles are not allowed.");
           return edges;
@@ -71,8 +79,13 @@ const TravelRoute: React.FC = () => {
   const addCountryNode = useCallback(
     (country: Country) => {
       setNodes((nodes) => {
-        if (nodes.some((node) => node.id === country.cca3)) return nodes;
-        const pos = {
+        if (nodes.some((node) => node.id === country.cca3)) {
+          return nodes;
+        }
+        /**
+         * create a random position where to put the node
+         */
+        const position = {
           x: 120 + Math.random() * 200,
           y: 120 + Math.random() * 160,
         };
@@ -81,7 +94,7 @@ const TravelRoute: React.FC = () => {
           ...nodes,
           {
             id: country.cca3,
-            position: pos,
+            position,
             type: "country",
             data: {
               name: country.name,
@@ -91,6 +104,9 @@ const TravelRoute: React.FC = () => {
             },
           },
         ];
+        /**
+         * automatically centers and scales the view when no nodes or when loaded an empty graph
+         */
         if (nodes.length === 0) {
           setTimeout(() => ref.current?.fitView({ padding: 0.2 }), 0);
         }
