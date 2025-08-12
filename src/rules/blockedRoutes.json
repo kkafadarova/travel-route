@@ -1,0 +1,9 @@
+{
+  "blocked": [
+    { "from": "ESP", "to": "GRC", "reason": "Spain → Greece is blocked" },
+    { "from": "USA", "to": "CUB", "reason": "Route not allowed" }
+  ],
+  "blockedUndirected": [
+    ["ARM", "AZE"] 
+  ]
+}

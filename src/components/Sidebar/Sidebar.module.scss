@@ -1,0 +1,38 @@
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.addBtn {
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  padding: 6px 10px;
+  border: 1px solid #ef4444; 
+  border-radius: 6px;
+  background: #fee2e2; 
+  color: #b91c1c;
+  cursor: pointer;
+
+  &:hover {
+    background: #fecaca; 
+  }
+}
+

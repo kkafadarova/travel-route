@@ -1,0 +1,19 @@
+.node {
+  position: relative;
+  border: 1px solid #999;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.selected {
+  border: 2px solid #64748b;
+}
+
+.flag {
+    border-radius: 2px;
+}
