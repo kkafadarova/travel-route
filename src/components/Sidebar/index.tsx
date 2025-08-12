@@ -2,7 +2,11 @@ import styles from "./Sidebar.module.scss";
 import { useCountries } from "../../hooks/useCountries";
 import type { SidebarProps } from "../../types";
 
-const Sidebar: React.FC<SidebarProps> = ({ onAdd }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  onAdd,
+  onDelete,
+  addedCountries,
+}) => {
   const { filteredCountries, search, setSearch, loading, error } =
     useCountries();
 
@@ -30,21 +34,37 @@ const Sidebar: React.FC<SidebarProps> = ({ onAdd }) => {
         </p>
       )}
 
-      {filteredCountries.map((country) => (
-        <div key={country.cca3} className={styles.item}>
-          <div className={styles.itemLeft}>
-            {country.flag && (
-              <img src={country.flag} alt={`${country.name} flag`} width={20} />
+      {filteredCountries.map((country) => {
+        const isAdded = addedCountries.includes(country.cca3);
+        return (
+          <div key={country.cca3} className={styles.item}>
+            <div className={styles.itemLeft}>
+              {country.flag && (
+                <img
+                  src={country.flag}
+                  alt={`${country.name} flag`}
+                  width={20}
+                />
+              )}
+              <span>
+                {country.name} ({country.cca3})
+              </span>
+            </div>
+            {isAdded ? (
+              <button
+                className={styles.deleteBtn}
+                onClick={() => onDelete(country.cca3)}
+              >
+                Delete
+              </button>
+            ) : (
+              <button className={styles.addBtn} onClick={() => onAdd(country)}>
+                Add
+              </button>
             )}
-            <span>
-              {country.name} ({country.cca3})
-            </span>
           </div>
-          <button className={styles.addBtn} onClick={() => onAdd(country)}>
-            Add
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </aside>
   );
 };
