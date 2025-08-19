@@ -48,6 +48,8 @@ export function isRouteBlocked(
   sourceId: string | null,
   targetId: string | null
 ): string | null {
+  if (!sourceId || !targetId) return null;
+  
   const config = rules as BlockedRoutesConfig;
 
   const oneWayMatch = config.blocked.find(

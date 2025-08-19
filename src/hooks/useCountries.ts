@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { Country } from "../types";
 import { fetchCountries } from "../services/countries";
 
@@ -20,11 +20,14 @@ export function useCountries() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filteredCountries = countries.filter(
+  const filteredCountries = useMemo(() => {
+  const searchedWord = search.toLowerCase();
+  return countries.filter(
     (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.cca3.toLowerCase().includes(search.toLowerCase())
+      c.name.toLowerCase().includes(searchedWord) ||
+      c.cca3.toLowerCase().includes(searchedWord)
   );
+}, [countries, search]);
 
   return { countries, filteredCountries, search, setSearch, loading, error };
 }

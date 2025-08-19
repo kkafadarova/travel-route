@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 function mockFetchOk(payload: unknown) {
-  vi.spyOn(global, "fetch").mockResolvedValue({
+  vi.spyOn(globalThis, "fetch").mockResolvedValue({
     ok: true,
     status: 200,
     statusText: "OK",
@@ -16,7 +16,7 @@ function mockFetchOk(payload: unknown) {
 }
 
 function mockFetchFail(status = 500, statusText = "Server Error") {
-  vi.spyOn(global, "fetch").mockResolvedValue({
+  vi.spyOn(globalThis, "fetch").mockResolvedValue({
     ok: false,
     status,
     statusText,
@@ -26,23 +26,23 @@ function mockFetchFail(status = 500, statusText = "Server Error") {
 
 describe("fetchCountries", () => {
   it("maps and sorts countries (prefers png, falls back to svg)", async () => {
-    const apiData: CountryDetails[] = [
-      {
-        cca3: "GRC",
-        name: { common: "Greece" } as any,
-        flags: { png: undefined, svg: "greece.svg" } as any,
-      },
-      {
-        cca3: "ESP",
-        name: { common: "Spain" } as any,
-        flags: { png: "spain.png", svg: "spain.svg" } as any,
-      },
-      {
-        cca3: "FRA",
-        name: { common: "France" } as any,
-        flags: { png: "france.png", svg: "france.svg" } as any,
-      },
-    ];
+const apiData: CountryDetails[] = [
+  {
+    cca3: "GRC",
+    name: { common: "Greece" },               
+    flags: { svg: "greece.svg" },             
+  },
+  {
+    cca3: "ESP",
+    name: { common: "Spain" },
+    flags: { png: "spain.png", svg: "spain.svg" },
+  },
+  {
+    cca3: "FRA",
+    name: { common: "France" },
+    flags: { png: "france.png", svg: "france.svg" },
+  },
+];
 
     mockFetchOk(apiData);
 
@@ -54,18 +54,23 @@ describe("fetchCountries", () => {
     expect(result.find((c) => c.cca3 === "GRC")!.flag).toBe("greece.svg");
   });
 
-  it("passes the AbortSignal to fetch", async () => {
+  it("calls fetch with the expected URL (no options)", async () => {
     const apiData: CountryDetails[] = [];
     const fetchSpy = vi
-      .spyOn(global, "fetch")
-      .mockResolvedValue({ ok: true, status: 200, statusText: "OK", json: async () => apiData } as any);
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        json: async () => apiData,
+      } as unknown as Response);
 
-    const controller = new AbortController();
-    await fetchCountries(controller.signal);
+    await fetchCountries();
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
-    const [, options] = fetchSpy.mock.calls[0];
-    expect(options).toMatchObject({ signal: controller.signal });
+    const [url, options] = fetchSpy.mock.calls[0];
+    expect(typeof url).toBe("string");
+    expect(options).toBeUndefined();
   });
 
   it("throws with status and statusText when response not ok", async () => {

@@ -3,8 +3,8 @@ import type { Country, CountryDetails } from "../types";
 const FIELDS = "cca3,name,flags";
 const API = `https://restcountries.com/v3.1/all?fields=${FIELDS}`;
 
-export async function fetchCountries(signal?: AbortSignal): Promise<Country[]> {
-  const request = await fetch(API, { signal });
+export async function fetchCountries(): Promise<Country[]> {
+  const request = await fetch(API);
   if (!request.ok) {
     throw new Error(`Countries request failed: ${request.status} ${request.statusText}`);
   }

@@ -3,6 +3,7 @@ import ReactFlow, {
   Background,
   Controls,
   addEdge,
+  MiniMap,
   useEdgesState,
   useNodesState,
 } from "reactflow";
@@ -32,8 +33,8 @@ const TravelRoute: React.FC = () => {
   }, []);
 
   /**
-   * валидиране на връзките (без alert тук)
-   * връща true/false и записва причина в invalidReason
+   * Validate connections (no alerts here)
+   * Returns true/false and sets the reason in invalidReason
    */
   const isValidConnection = useCallback(
     (connection: Connection) => {
@@ -41,18 +42,22 @@ const TravelRoute: React.FC = () => {
       if (!source || !target) return false;
 
       /**
-       * block already existed connection
+       * Block already existing connection
        */
-      const alreadyExistedEdge = edges.some(
-        (edge) => edge.source === source && edge.target === target
-      );
-      if (alreadyExistedEdge) {
+      const existsDirected = edges.some(
+        (e) => e.source === source && e.target === target
+      ); // A→B
+      const existsReverse = edges.some(
+        (e) => e.source === target && e.target === source
+      ); // B→A
+
+      if (existsDirected || existsReverse) {
         setInvalidReason(null);
         return false;
       }
 
       /**
-       * block self-loop
+       * Block self-loops
        */
       if (source === target) {
         setInvalidReason("A country cannot connect to itself.");
@@ -60,7 +65,7 @@ const TravelRoute: React.FC = () => {
       }
 
       /**
-       *  block specific routes based on predefined rules stored in JSON
+       * Block specific routes based on predefined rules stored in JSON
        */
       const reason = isRouteBlocked(source, target);
       if (reason) {
@@ -69,7 +74,7 @@ const TravelRoute: React.FC = () => {
       }
 
       /**
-       * cycle prevention validation
+       * Prevent cycles
        */
       if (createsCycle(edges, source, target)) {
         setInvalidReason(
@@ -85,7 +90,7 @@ const TravelRoute: React.FC = () => {
   );
 
   /**
-   * показваме alert само веднъж, когато жестът за свързване приключи
+   * Show alert only once when the connection gesture ends
    */
   const onConnectEnd = useCallback(() => {
     if (invalidReason) {
@@ -94,6 +99,9 @@ const TravelRoute: React.FC = () => {
     }
   }, [invalidReason]);
 
+  /**
+   * Add edge when a valid connection is made
+   */
   const onConnect = useCallback(
     (connection: Connection) => {
       if (!connection.source || !connection.target) return;
@@ -102,6 +110,9 @@ const TravelRoute: React.FC = () => {
     [setEdges]
   );
 
+  /**
+   * Add a new country node
+   */
   const addCountryNode = useCallback(
     (country: Country) => {
       setNodes((nodes) => {
@@ -109,7 +120,7 @@ const TravelRoute: React.FC = () => {
           return nodes;
         }
         /**
-         * create a random position where to put the node
+         * Create a random position for the node
          */
         const position = {
           x: 120 + Math.random() * 200,
@@ -131,7 +142,8 @@ const TravelRoute: React.FC = () => {
           },
         ];
         /**
-         * automatically centers and scales the view when no nodes or when loaded an empty graph
+         * Automatically center and scale the view
+         * when no nodes exist or when loading an empty graph
          */
         if (nodes.length === 0) {
           setTimeout(() => ref.current?.fitView({ padding: 0.2 }), 0);
@@ -143,6 +155,9 @@ const TravelRoute: React.FC = () => {
     [setNodes]
   );
 
+  /**
+   * Remove a country node
+   */
   const removeCountryNode = useCallback(
     (id: string) => {
       setNodes((nodes) => nodes.filter((n) => n.id !== id));
@@ -172,6 +187,7 @@ const TravelRoute: React.FC = () => {
           onConnectEnd={onConnectEnd}
           fitView
         >
+          <MiniMap nodeStrokeWidth={3} />
           <Background />
           <Controls />
         </ReactFlow>
